@@ -8,14 +8,28 @@ screen.title('Snake Game')
 screen.setup(width=600, height=600)
 screen.bgcolor('black')
 # screen.bgpic('download.png')
-position=[20,-20,-40]
-for i in range(3):
-    snake=Turtle()
-    snake.shape('square')
-    snake.shapesize(stretch_wid=0.2, stretch_len=0.2)
-    snake.goto(position[i],0)
-    snake.color('white')
-    snake.penup()
+
+
+
+#snake body
+segments=[]
+positions=[0,-20,-40]
+for position in positions:
+    snake_segment=Turtle()
+    snake_segment.penup()
+    snake_segment.color('white')
+    if position==0:
+        snake_segment.shape('triangle')
+    else:
+        snake_segment.shape('square')
+    snake_segment.goto(position,0)
+
+    segments.append(snake_segment)
+
+
+
+
+
 
 
 
