@@ -3,7 +3,7 @@ from turtle import Turtle,Screen
 
 STARTING_POS=[(0,0),(-20,0),(-40,0)]
 MOVE_DISTANCE=20
-SNAKE_HEAD_COLOR='red'
+SNAKE_HEAD_COLOR='yellow'
 SNAKE_HEAD_SHAPE='triangle'
 SNAKE_BODY_COLOR='white'
 SNAKE_BODY_SHAPE='circle'
