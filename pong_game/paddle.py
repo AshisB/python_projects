@@ -19,3 +19,6 @@ class Paddle(Turtle):
         self.shapesize(PADDLE_WIDTH,PADDLE_LENGTH)
         self.color(PADDLE_COLOR)
         self.goto(PADDLE_POSITION)
+
+    def MovePaddle(self):
+        pass
