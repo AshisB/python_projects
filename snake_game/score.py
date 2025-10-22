@@ -1,6 +1,6 @@
 from turtle import Turtle
 
-SCORE_POS=(0,270)
+SCORE_POS=(0,260)
 SCORE_COLOR='black'
 SCORE_FONT=("Arial", 16, "bold")
 SCORE_ALIGN='center'
@@ -19,12 +19,14 @@ class Score(Turtle):
 
     def scoreCount(self):
         self.score_count+=1
-        self.hideturtle()
         self.updateScore()
 
     def updateScore(self):
         self.clear()
         self.write(f'Score={self.score_count}', align=SCORE_ALIGN, font=SCORE_FONT)
 
+    def hitTheWall(self):
+        self.goto(0,0)
+        self.write(f'Game Over', align=SCORE_ALIGN, font=SCORE_FONT)
 
 

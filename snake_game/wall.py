@@ -23,6 +23,7 @@ class Wall():
 
     def createWalls(self):
             for i in range(NUMBER_OF_BRICKS):
-                brick=Brick(-(HALF_WIDTH)+(BRICK_SIZE*i),HALF_WIDTH)
-                brick = Brick(-(HALF_WIDTH) + (BRICK_SIZE * i), -HALF_WIDTH)
-                self.bricks.append(brick)
+                brick1=Brick(-(HALF_WIDTH)+(BRICK_SIZE*i),HALF_WIDTH)
+                brick2 = Brick(-(HALF_WIDTH) + (BRICK_SIZE * i), -HALF_WIDTH+10)
+                self.bricks.append(brick1)
+                self.bricks.append(brick2)

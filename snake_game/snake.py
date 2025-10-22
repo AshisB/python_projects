@@ -1,10 +1,11 @@
 #snake class file
 from turtle import Turtle,Screen
 
-STARTING_POS=[(0,0),(-20,0),(-40,0)]
-MOVE_DISTANCE=20
-SNAKE_HEAD_COLOR='yellow'
-SNAKE_HEAD_SHAPE='triangle'
+STARTING_POS=[(0,0),(-10,0),(-20,0)]
+MOVE_DISTANCE=10
+SNAKE_SIZE=0.5
+SNAKE_HEAD_COLOR='red'
+SNAKE_HEAD_SHAPE='square'
 SNAKE_BODY_COLOR='white'
 SNAKE_BODY_SHAPE='circle'
 UP,DOWN,RIGHT,LEFT=90,270,0,180
@@ -14,24 +15,28 @@ class Snake:
         self.segments = []
         self.speed=10
         self.createSnake()
+        self.segment=None
         self.head=self.segments[0]
         self.head.shape(SNAKE_HEAD_SHAPE)
         self.head.color(SNAKE_HEAD_COLOR)
         self.setupControl()
 
+    def snakeSegment(self):
+        snake_segment = Turtle()
+        snake_segment.shapesize(SNAKE_SIZE, SNAKE_SIZE)
+        snake_segment.speed(self.speed)
+        snake_segment.penup()
+        snake_segment.color(SNAKE_BODY_COLOR)
+        snake_segment.shape(SNAKE_BODY_SHAPE)
+        self.segment = snake_segment
+
+
     def createSnake(self):
         # snake body
         for position in STARTING_POS:
-            snake_segment = Turtle()
-            snake_segment.speed(self.speed)
-            snake_segment.penup()
-            snake_segment.color(SNAKE_BODY_COLOR)
-            snake_segment.shape(SNAKE_BODY_SHAPE)
-            snake_segment.goto(position)
-            self.segments.append(snake_segment)
-
-
-
+            self.snakeSegment()
+            self.segment.goto(position)
+            self.segments.append(self.segment)
 
 
 
@@ -92,5 +97,15 @@ class Snake:
             self.head.setheading(DOWN)
 
 
+    def reappear(self):
+        sym=-1
+        new_ycor=self.head.ycor()
+        new_xcor = (sym*self.head.xcor())-(sym*MOVE_DISTANCE+10)
+        self.head.goto(new_xcor,new_ycor)
+
+
+    def addSegment(self):
+        self.snakeSegment()
+        self.segments.append(self.segment)
 
 
