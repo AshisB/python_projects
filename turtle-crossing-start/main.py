@@ -11,8 +11,9 @@ screen.tracer(0)
 
 
 player=Player()
-car = CarManager()
+player.SetupControls(screen)
 
+car = CarManager()
 
 game_is_on=True
 while game_is_on:
