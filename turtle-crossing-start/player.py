@@ -13,9 +13,9 @@ class Player(Turtle):
     def SetupControls(self,screen):
         screen.listen()
         screen.onkey(self.MoveUp,'Up')
-        screen.onkey(self.MoveDown, 'Down')
-        screen.onkey(self.MoveRight, 'Right')
-        screen.onkey(self.MoveLeft, 'Left')
+        # screen.onkey(self.MoveDown, 'Down')
+        # screen.onkey(self.MoveRight, 'Right')
+        # screen.onkey(self.MoveLeft, 'Left')
 
     def MoveUp(self):
         self.setheading(90)
@@ -32,3 +32,7 @@ class Player(Turtle):
     def MoveLeft(self):
         self.setheading(180)
         self.forward(10)
+
+    def NextLevel(self):
+        self.goto(0, -280)
+        return True
