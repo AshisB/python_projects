@@ -50,11 +50,9 @@ class CarManager:
             car.backward(random_movement+self.car_speed)
             if car.xcor() < -50:
                 self.y_position = self.y_position[5:]
-                print('reached here removing ypos')
             if car.xcor()<-280:
                 cars.remove(car)
                 car.hideturtle()
-                print(f'removed {car.xcor()}')
 
             if car.distance(player) < 5:
                 return 'gameover'
@@ -62,5 +60,6 @@ class CarManager:
 
     def IncreaseSpeed(self):
         self.car_speed+=5
+        print(self.car_speed)
 
 

@@ -23,10 +23,12 @@ class Score(Turtle):
         self.DisplayOutput()
 
 
+
     def LevelUpdate(self):
         self.level+=1
         self.score=0
         self.DisplayOutput()
+        return self.level
 
 
     def DisplayOutput(self):

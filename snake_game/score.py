@@ -14,6 +14,7 @@ class Score(Turtle):
         self.goto(SCORE_POS)
         self.color(SCORE_COLOR)
         self.score_count=0
+        self.highscore=0
         self.updateScore()
 
 
@@ -23,10 +24,15 @@ class Score(Turtle):
 
     def updateScore(self):
         self.clear()
-        self.write(f'Score={self.score_count}', align=SCORE_ALIGN, font=SCORE_FONT)
+        self.write(f'Score={self.score_count},High Score={self.highscore}', align=SCORE_ALIGN, font=SCORE_FONT)
 
     def hitTheWall(self):
         self.goto(0,0)
         self.write(f'Game Over', align=SCORE_ALIGN, font=SCORE_FONT)
+
+    def resetScore(self):
+        if self.score_count>self.highscore:
+            self.highscore = self.score_count
+        self.score_count=0
 
 

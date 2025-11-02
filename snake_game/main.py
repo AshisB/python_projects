@@ -43,22 +43,21 @@ while is_game_on:
     #Detect collision with wall
     for unit_brick in wall.bricks:
         if snake.head.distance(unit_brick) <11:
-            score.hitTheWall()
-            is_game_on=False
-
-    # Detect collision with tail
-    # for segment in snake.segments:
-    #     if segment not in snake.segments[0:3]:
-    #         if snake.head.distance(segment) <10:
-    #             score.hitTheWall()
-    #             is_game_on=False
+            # score.hitTheWall()
+            # is_game_on=False
+            score.resetScore()
+            snake.resetSnake()
 
 
     # Detect collision with tail
     for segment in snake.segments[2:]:
         if snake.head.distance(segment) < 10:
-            score.hitTheWall()
-            is_game_on = False
+            # score.hitTheWall()
+            # is_game_on = False
+            score.resetScore()
+            snake.resetSnake()
+
+
 
 
 

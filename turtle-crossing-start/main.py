@@ -2,6 +2,7 @@ from turtle import Screen,Turtle
 from car_manager import CarManager
 from player import Player
 from score import Score
+from level import Level
 import time
 
 
@@ -16,6 +17,7 @@ player.SetupControls(screen)
 
 score=Score()
 
+
 car = CarManager()
 
 game_is_on=True
@@ -24,11 +26,20 @@ while game_is_on:
     screen.update()
     car.CreateCar()
     car.MoveCar(car.cars,player)
+
+    #dealing with level of game
     if player.ycor() > 280:
-        score.LevelUpdate()
+        get_score=score.LevelUpdate()
         is_next_level=player.NextLevel()
         if is_next_level:
-            car.IncreaseSpeed()
+            print(get_score)
+            level=Level(car,get_score)
+            level.ManageLevel()
+            # here car.Increase speed is one example about making level tougher
+            #here we can create more levels so we have to create a page which manage levels
+            # and this level calls different levels  where we all different  modification
+            # to player and car and speed and logics
+
 
     #detect collision with cars and calculate score
     for unit_car in car.cars:
