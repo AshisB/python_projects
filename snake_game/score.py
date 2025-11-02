@@ -34,5 +34,6 @@ class Score(Turtle):
         if self.score_count>self.highscore:
             self.highscore = self.score_count
         self.score_count=0
+        self.updateScore()
 
 
