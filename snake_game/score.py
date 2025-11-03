@@ -14,7 +14,7 @@ class Score(Turtle):
         self.goto(SCORE_POS)
         self.color(SCORE_COLOR)
         self.score_count=0
-        self.highscore=0
+        self.highscore = int(self.ReadFile())
         self.updateScore()
 
 
@@ -33,7 +33,21 @@ class Score(Turtle):
     def resetScore(self):
         if self.score_count>self.highscore:
             self.highscore = self.score_count
+            self.WriteFile(self.score_count)
         self.score_count=0
         self.updateScore()
+
+
+
+
+
+    def ReadFile(self):
+        with open('score_data.txt', mode='r') as f:
+            score_data = f.read()
+            return score_data
+
+    def WriteFile(self,highscore):
+        with open('score_data.txt', mode='w') as f:
+            f.write(f'{highscore}')
 
 
