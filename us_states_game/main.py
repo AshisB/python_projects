@@ -43,7 +43,7 @@ for _ in range(50):
         score.update()
         answers.append(state_name)
     score.UpdateAttempt()
-   
+
 
 
 #After game ends,also to generate csv 
