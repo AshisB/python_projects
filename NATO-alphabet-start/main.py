@@ -38,9 +38,13 @@ while is_on:
     user_input=input('Enter a word: ').upper()
     if user_input=='EXIT':
         is_on=False
-    else:    
-        nato_aplha=[(letter,new_dict[letter]) for letter in user_input if letter in new_dict]
-        [print(f'{item[0]}=>{item[1]}\n') for item in nato_aplha]
+    else:
+        try:
+            nato_aplha=[(letter,new_dict[letter]) for letter in user_input  if letter in new_dict]
+        except KeyError:
+            print('Sorry,only letters in the alphabet please.')
+        else:
+            [print(f'{item[0]}=>{item[1]}\n') for item in nato_aplha]
     
 
     

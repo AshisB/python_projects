@@ -1,7 +1,31 @@
+import json
 from tkinter import *
 from tkinter import messagebox
 from random import randint,choice,shuffle
 import pyperclip
+#------------------------------SEARCH CREDENTIALS--------------------------------#
+def SearchCredentials():
+    website_name=website.get().lower()
+    try:
+        with open('data.json') as f:
+            all_data=json.load(f)
+    except FileNotFoundError:
+        messagebox.showerror('OOPS','No data in file')
+    else:
+        search_data={key.lower():value for key,value in all_data.items()}
+        if website_name in search_data:
+             email,password=next(iter(search_data[website_name].items()))
+             pyperclip.copy(password)
+             messagebox.showinfo(website_name, f'Your Email/Username:{email}\nYour Password:{password}')
+
+        else:
+            messagebox.showerror('Oops', f'Sorry!No data available for {website_name}')
+
+
+
+
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 #Password Generator Project
 def GeneratePassword():
@@ -23,7 +47,7 @@ def GeneratePassword():
     pyperclip.copy(result_password)
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def SavePassword():
-    website_data=website.get()
+    website_data=website.get().lower()
     email_data=email.get()
     password_data=password.get()
 
@@ -44,9 +68,22 @@ def SavePassword():
     else:
         isok=messagebox.askokcancel(title=website_data,message=f"These are the details entered:\nWebsite:{website_data}\nEmail:{email_data}\nPassword:{password_data}")
         if isok:
-            userdata=f'{website_data},{email_data},{password_data}\n'
-            with open('data.txt','a') as f:
-                f.write(userdata)
+            userdata={
+                website_data:{
+                    email_data:password_data
+                }
+            }
+            try:
+                with open('data.json','r') as f:
+                    all_data=json.load(f)
+            except FileNotFoundError:
+                with open('data.json','w') as f:
+                    json.dump(userdata,f,indent=4)
+            else:
+                all_data.update(userdata)
+                with open('data.json', 'w') as f:
+                    json.dump(all_data, f, indent=4)
+            finally:
                 email.delete(0,END)
                 password.delete(0,END)
                 website.delete(0,END)
@@ -82,15 +119,21 @@ password_label.grid(row=3,column=0)
 #Adding Entries
 
 website=Entry(width=35)
-website.grid(row=1, column=1, columnspan=2, sticky='ew',pady=5,padx=5)
+website.grid(row=1, column=1, sticky='ew',pady=5,padx=5)
 website.focus()
 
 email=Entry(width=35)
+email.insert(0,'ashis.maharjan@sanimabank.com')
 email.grid(row=2, column=1, columnspan=2, sticky='ew',pady=5,padx=5)
 
 
 password=Entry(width=21)
 password.grid(row=3, column=1, sticky='ew',pady=5,padx=5)
+
+#Searching Credentials
+
+search_button=Button(text='Search',bg='blue',fg='white',command=SearchCredentials)
+search_button.grid(row=1, column=2, sticky='ew',pady=5,padx=5)
 
 #Adding password
 
