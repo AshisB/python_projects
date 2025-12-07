@@ -3,6 +3,23 @@ from tkinter import *
 from tkinter import messagebox
 from random import randint,choice,shuffle
 import pyperclip
+import os
+import sys
+from encrypt_decrypt import Encryption
+
+encryption=Encryption()
+encryption.master_password='Hello@123'
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 #------------------------------SEARCH CREDENTIALS--------------------------------#
 def SearchCredentials():
     website_name=website.get().lower()
@@ -12,6 +29,7 @@ def SearchCredentials():
     except FileNotFoundError:
         messagebox.showerror('OOPS','No data in file')
     else:
+        all_data=encryption.decrypt(all_data)
         search_data={key.lower():value for key,value in all_data.items()}
         if website_name in search_data:
              email,password=next(iter(search_data[website_name].items()))
@@ -20,12 +38,6 @@ def SearchCredentials():
 
         else:
             messagebox.showerror('Oops', f'Sorry!No data available for {website_name}')
-
-
-
-
-
-
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 #Password Generator Project
 def GeneratePassword():
@@ -73,14 +85,19 @@ def SavePassword():
                     email_data:password_data
                 }
             }
+
             try:
                 with open('data.json','r') as f:
                     all_data=json.load(f)
             except FileNotFoundError:
+                userdata = encryption.encrypt(userdata)
                 with open('data.json','w') as f:
                     json.dump(userdata,f,indent=4)
             else:
+                all_data=encryption.decrypt(all_data)
+                print(all_data)
                 all_data.update(userdata)
+                all_data = encryption.encrypt(all_data)
                 with open('data.json', 'w') as f:
                     json.dump(all_data, f, indent=4)
             finally:
@@ -98,10 +115,13 @@ window.title('MyPass')
 window.config(padx=50,pady=50)
 
 # Adding logo
-canvas=Canvas(height=200,width=200)
-logo_name=PhotoImage(file='./logo.png')
-canvas.create_image(100,100,image=logo_name)
-canvas.grid(row=0,column=1)
+try:
+    canvas=Canvas(height=200,width=200)
+    logo_name=PhotoImage(file=resource_path('./logo.png'))
+    canvas.create_image(100,100,image=logo_name)
+    canvas.grid(row=0,column=1)
+except Exception:
+    Label(text="🔒 My Pass", font=("Arial", 24, "bold")).grid(column=1, row=0)
 
 #Adding Labels
 

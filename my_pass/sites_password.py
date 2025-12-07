@@ -3,6 +3,11 @@ from tkinter import *
 from tkinter import messagebox
 from random import randint,choice,shuffle
 import pyperclip
+from encrypt_decrypt import Encryption
+
+
+
+encryption=Encryption()
 
 # colors
 all_buttons={}
@@ -71,6 +76,7 @@ try:
 except FileNotFoundError:
     messagebox.showerror('Sorry!File not found :)')
 else:
+    all_data=encryption.decrypt(all_data)
     sorted_data=dict(sorted(all_data.items()))
     counter=0
 
