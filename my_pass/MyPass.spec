@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['main.py'],
+    ['save_password.py'],
     pathex=[],
     binaries=[],
     datas=[('logo.png', '.')],

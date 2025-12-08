@@ -6,13 +6,13 @@ import pyperclip
 import os
 import sys
 from encrypt_decrypt import Encryption
+from tkinter import simpledialog
 
 
 
 
 
-
-class MyApp():
+class MyApp:
     def __init__(self,window,entered_password):
         self.canvas = None
         self.encryption=Encryption()
@@ -49,9 +49,30 @@ class MyApp():
                 email, password = next(iter(search_data[website_name].items()))
                 pyperclip.copy(password)
                 messagebox.showinfo(website_name, f'Your Email/Username:{email}\nYour Password:{password}')
+                # Adding Add Button
+                self.add_button.grid_remove()
+                self.delete_button = Button(text='-Delete', bg='red', fg='white', command=lambda website=website_name:self.DeletePassword(website))
+                self.delete_button.grid(row=4, column=1, columnspan=2, sticky='ew', pady=5, padx=5)
 
             else:
                 messagebox.showerror('Oops', f'Sorry!No data available for {website_name}')
+
+
+    #delete password
+    def DeletePassword(self,website_name):
+        with open('data.json', 'r') as f:
+            all_data = json.load(f)
+            all_data = self.encryption.decrypt(all_data, self.entered_password)
+            if website_name in all_data:
+                del all_data[website_name]
+            all_data.update(all_data)
+            encrypted_data = self.encryption.encrypt(all_data, self.entered_password)
+            with open('data.json', 'w') as f:
+                json.dump(encrypted_data, f, indent=4)
+
+            self.website.delete(0, END)
+            self.delete_button.destroy()
+            self.add_button.grid(row=4, column=1, columnspan=2, sticky='ew', pady=5, padx=5)
 
     # ---------------------------- PASSWORD GENERATOR ------------------------------- #
     # Password Generator Project
@@ -113,11 +134,10 @@ class MyApp():
                         json.dump(userdata, f, indent=4)
                 else:
                     all_data = self.encryption.decrypt(all_data,self.entered_password)
-                    print(all_data)
                     all_data.update(userdata)
-                    all_data =  self.encryption.encrypt(userdata,self.entered_password)
+                    encrypted_data =  self.encryption.encrypt(all_data,self.entered_password)
                     with open('data.json', 'w') as f:
-                        json.dump(all_data, f, indent=4)
+                        json.dump(encrypted_data, f, indent=4)
                 finally:
                     self.email.delete(0, END)
                     self.password.delete(0, END)
@@ -125,6 +145,7 @@ class MyApp():
                     messagebox.showinfo(title='Message', message='Successfully Added!!')
 
     def CreateWidgets(self):
+        self.window.config(padx=50, pady=50)
         # Adding logo
         try:
             self.canvas = Canvas(height=200, width=200)
@@ -172,6 +193,7 @@ class MyApp():
         self.add_button = Button(text='+Add', bg='green', fg='white', command=self.SavePassword)
         self.add_button.grid(row=4, column=1, columnspan=2, sticky='ew', pady=5, padx=5)
 
+
 #
 #
 class MasterPass():
@@ -207,7 +229,7 @@ class MasterPass():
                 self.ShowMyApp(entered_password)
         else:
             if not self.encryption.verify_master_hash(entered_password):
-                messagebox.showerror("Error", "Wrong password!")
+                messagebox.showerror("Error", "Wrong password hash!")
                 return
 
             if not os.path.exists('passwords.enc'):
@@ -225,14 +247,25 @@ class MasterPass():
 
 
 
+
     def ShowMyApp(self,entered_password):
         for widget in self.window.winfo_children():
             widget.destroy()
+
+        #now we are redirecting to another window based on users choice.
         from save_password import MyApp
-        self.app = MyApp(self.window,entered_password)
+        dialog = simpledialog.askstring("Choose", "Where to go?\nType 'A' to Add Passwords or 'V' to View Passwords: ").lower()
+        if dialog == "a":
+            self.app = MyApp(self.window, entered_password)
+        elif dialog=='v':
+            self.app = ViewPass(self.window, entered_password)
+        else:
+            self.ShowMyApp(entered_password)
+
 
 
     def CreatePasswordWidgets(self):
+        self.window.config(padx=50, pady=50)
         # Clear any existing widgets first
         for widget in self.window.winfo_children():
             widget.destroy()
@@ -256,12 +289,88 @@ class MasterPass():
         self.master_password = Entry(width=35)
         self.master_password.grid(row=1, column=1, columnspan=2, sticky='ew', pady=5, padx=5)
         self.master_password.focus()
-
+        self.master_password.bind('<Return>',lambda e: self.VerifyPassword() if self.master_password.get().strip() else None)
 
         # Adding Unlock/Save Button
 
         self.add_button = Button(text='Unlock', bg='green', fg='white', command=self.VerifyPassword)
         self.add_button.grid(row=2, column=1, columnspan=2, sticky='ew', pady=5, padx=5)
+
+class ViewPass:
+
+    def __init__(self,window,master_password):
+        # colors
+        self.all_buttons = {}
+        self.button_colors = [
+            "#2E5894",  # 1. Blue Sapphire - Deep, trustworthy blue
+            "#1560BD",  # 2. Denim Blue - Modern, calm blue
+            "#1E6FD9",  # 3. Royal Blue - Vibrant but not harsh
+            "#3A7CA5",  # 4. Steel Blue - Muted professional blue
+            "#2E8B57",  # 5. Sea Green - Natural, success green
+            "#3A9D5B",  # 6. Emerald - Fresh, positive green
+            "#4C956C",  # 7. Forest Green - Earthy, stable green
+            "#008080",  # 8. Teal - Balanced, creative
+            "#48A9A6",  # 9. Verditer - Soft teal-blue
+            "#5F9EA0",  # 10. Cadet Blue - Gentle, calming
+            "#6A5ACD",  # 11. Slate Blue - Creative purple-blue
+            "#7B68EE",  # 12. Medium Slate Blue - Friendly purple
+            "#9370DB",  # 13. Medium Purple - Calm, premium feel
+            "#B68D40",  # 14. Husk - Warm golden brown
+            "#C19A6B",  # 15. Camel - Soft earthy tone
+            "#708090",  # 16. Slate Gray - Professional neutral
+            "#778899",  # 17. Light Slate Gray - Light neutral
+            "#5C8D6F",  # 18. Sage Green - Muted natural green
+            "#6AAAA0",  # 19. Polished Pine - Soft green-teal
+            "#9461C2",  # 20. Amethyst - Gentle purple
+            "#8B7355",  # 21. Burlywood Dark - Warm neutral
+            "#367588",  # 22. Teal Blue - Deep calming teal
+            "#228B22",  # 23. Forest Green (vibrant) - Success color
+            "#CD5C5C",  # 24. Indian Red - Soft warning red (use sparingly)
+            "#5A7D9A",  # 25. Slate Blue - Muted blue-gray
+        ]
+        self.window = window
+        self.master_password = master_password
+        self.encryption = Encryption()
+        self.CreatePasswordTabs()
+
+
+
+    # -----------------------------------Creating buttons for each sites--------------------------------#
+    def CreatePasswordTabs(self):
+        self.window.config(padx=1, pady=1)
+        try:
+            with open('data.json') as f:
+                view_all_data = json.load(f)
+        except FileNotFoundError:
+            messagebox.showerror('OOPS', 'No data in file')
+        else:
+            all_data = self.encryption.decrypt(view_all_data, self.master_password)
+
+            sorted_data = dict(sorted(all_data.items()))
+            counter_x = 0
+            counter_y=0
+
+            for data in sorted_data:
+                email, password = next(iter(sorted_data[data].items()))
+                search_button = Button(text=data, bg=choice(self.button_colors), fg='white',
+                                       command=lambda user_password=password, user_email=email,
+                                                      website_data=data: self.SetPassword(user_password, user_email,
+                                                                                     website_data))
+                search_button.grid(row=counter_x, column=counter_y, sticky='ew', pady=5, padx=5)
+                if counter_y < 1:
+                    counter_y += 1
+                else:
+                    counter_x += 1
+                    counter_y = 0
+                self.all_buttons[data] = search_button
+
+
+    def SetPassword(self,password, email, website):
+        pyperclip.copy(password)
+        for button in self.all_buttons:
+            self.all_buttons[button].config(bg=choice(self.button_colors))
+        self.all_buttons[website].config(bg='white', fg='black')
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 
@@ -279,7 +388,7 @@ if __name__ == "__main__":
         return os.path.join(base_path, relative_path)
     window=Tk()
     window.title('MyPass')
-    window.config(padx=50, pady=50)
+
 
     masterpass = MasterPass(window)
     # app = MyApp(window)

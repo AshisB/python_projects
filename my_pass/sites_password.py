@@ -4,7 +4,7 @@ from tkinter import messagebox
 from random import randint,choice,shuffle
 import pyperclip
 from encrypt_decrypt import Encryption
-
+from save_password import MyApp,MasterPass
 
 
 encryption=Encryption()
@@ -55,6 +55,7 @@ def SetPassword(password,email,website):
 
 window=Tk()
 window.title('MyPass')
+masterpass = MasterPass(window)
 # window.config(padx=50,pady=50)
 
 # # Adding logo
