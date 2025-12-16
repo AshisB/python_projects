@@ -2,7 +2,7 @@ import smtplib
 import datetime as dt
 import random
 
-with open('quotes.txt','r', encoding='utf-8') as f:
+with open('./quotes.txt', 'r', encoding='utf-8') as f:
     quotes=f.read()
 quotes_list=quotes.split("|")
 
