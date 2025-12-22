@@ -1,0 +1,2 @@
+THEME_COLOR = "#d3d3d3"
+

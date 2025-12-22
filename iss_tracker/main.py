@@ -45,19 +45,21 @@ def CheckNight():
 
 def CheckAbove():
     #iss api part
-    response_iss=requests.get('http://api.open-notify.org/iss-now.json',timeout=10)
-    response_iss.raise_for_status()
-    iss_data=response_iss.json()
+    try:
+        response_iss=requests.get('http://api.open-notify.org/iss-now.json',timeout=10)
+        response_iss.raise_for_status()
+    except:
+        response_iss= requests.get("https://api.wheretheiss.at/v1/satellites/25544", timeout=10)
+    else:
+        iss_data=response_iss.json()
+        iss_long=float(iss_data['iss_position']['longitude'])
+        iss_lat=float(iss_data['iss_position']['latitude'])
 
+        print(iss_long)
+        print(iss_lat)
 
-    iss_long=float(iss_data['iss_position']['longitude'])
-    iss_lat=float(iss_data['iss_position']['latitude'])
-
-    print(iss_long)
-    print(iss_lat)
-
-    if LAT_COR + 5 >= iss_lat >= LAT_COR - 5 and LONG_COR + 5 >= iss_long >= LONG_COR - 5:  # check if ISS is above head?
-        return True
+        if LAT_COR + 5 >= iss_lat >= LAT_COR - 5 and LONG_COR + 5 >= iss_long >= LONG_COR - 5:  # check if ISS is above head?
+            return True
 
 
 #here we are writing to track and notify
