@@ -1,0 +1,67 @@
+# -*- mode: python ; coding: utf-8 -*-
+
+# Import necessary PyInstaller components
+from PyInstaller.building.api import PYZ, EXE, COLLECT
+from PyInstaller.building.build_main import Analysis
+
+block_cipher = None
+
+# Application info
+app_name = 'Love_Meter'
+version = '1.0.0.0'
+company = 'Your Company Name'
+copyright = '© 2024 Your Name. All rights reserved.'
+description = 'Love Meter Application - Calculate compatibility between two people'
+
+a = Analysis(
+    ['save_password.py'],
+    pathex=[],
+    binaries=[],
+    datas=[
+        ('male.png', '.'),
+        ('female.png', '.'),
+        ('heart.png', '.'),
+        ('other.png', '.'),
+        ('heart.ico', '.')  # Add icon to datas as well
+    ],
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[
+        'matplotlib', 'numpy', 'pandas', 'scipy', 'PIL', 'pygame',
+        'test', 'unittest', 'pydoc', 'tcl', 'ttk',
+        'html', 'http', 'email', 'xml'
+        # DON'T exclude tkinter if your app uses it!
+        # DON'T exclude logging if you use it!
+    ],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+
+# One-file settings
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name=app_name,
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=False,  # UPX increases compression but can cause antivirus issues
+    console=False,  # Set to True if you need console window
+    icon='heart.ico',
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    version='version_info.txt'  # Use the version info file
+)
