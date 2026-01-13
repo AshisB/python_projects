@@ -64,26 +64,28 @@ def entry2sheet():
 
 
     workout_datas=workout()
-    workout_data=workout_datas['exercises'][0]
-    workout_name=workout_data['name']
-    workout_duration=workout_data['duration_min']
-    workout_calories=workout_data['nf_calories']
+    workout_data_all=workout_datas['exercises']
+    print(workout_datas)
+    for workout_data in workout_data_all:
+        workout_name=workout_data['name'].title()
+        workout_duration=workout_data['duration_min']
+        workout_calories=workout_data['nf_calories']
 
-    sheety_params={
-        "sheet1":{
-            "date":date_today,
-            "time":time_today,
-            "exercise":workout_name,
-            "duration":workout_duration,
-            "calories":workout_calories
-    }
-    }
+        sheety_params={
+            "sheet1":{
+                "date":date_today,
+                "time":time_today,
+                "exercise":workout_name,
+                "duration":workout_duration,
+                "calories":workout_calories
+        }
+        }
 
-    # print(sheety_params)
-    # # adding row to your sheet
-    sheety_endpoint='https://api.sheety.co/7e931b8e386f9080f71dce71a2bc478d/workoutTracking/sheet1'
-    sheety_reponse=requests.post(url=sheety_endpoint,headers=sheety_header,json=sheety_params)
-    return sheety_reponse.text
+        # print(sheety_params)
+        # # adding row to your sheet
+        sheety_endpoint='https://api.sheety.co/7e931b8e386f9080f71dce71a2bc478d/workoutTracking/sheet1'
+        sheety_reponse=requests.post(url=sheety_endpoint,headers=sheety_header,json=sheety_params)
+        return sheety_reponse.text
 
 
 
