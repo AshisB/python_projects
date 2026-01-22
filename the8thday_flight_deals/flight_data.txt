@@ -1,0 +1,141 @@
+import os
+import requests
+from dotenv import load_dotenv
+from flight_search import FlightSearch
+from pprint import pprint
+import json
+from datetime import datetime, timedelta
+import time
+
+AMADEUS_BASE_URL="https://test.api.amadeus.com/"
+
+
+
+class FlightData:
+    def __init__(self):
+       load_dotenv
+       flightobj=FlightSearch()
+       flightobj.get_token()
+       self.amadeus_token=flightobj.amadeus_token
+       self.ourcheapestflights={}
+
+
+
+    def get_date_range(self):
+          # Calculate dates
+        today = datetime.now()
+        tomorrow=today+ timedelta(days=1)
+        month=today+ timedelta(days=30)
+        two_month=today+ timedelta(days=60)
+        future_date = today + timedelta(days=180)
+        returndate= today + timedelta(days=15)
+        date_range=[]
+        for i in range(5):
+            d_date=today+ timedelta(days=30*i+1)
+            # a_date=d_date+ timedelta(days=14)
+            departure_date=d_date.strftime("%Y-%m-%d")
+            # arrrival_date=a_date.strftime("%Y-%m-%d")
+            date_range.append(departure_date)
+        
+        return date_range
+
+  
+
+    def get_flight_data(self,country,is_direct=True):
+        flight_url=f'{AMADEUS_BASE_URL}v2/shopping/flight-offers' 
+        amadeus_headers={
+                "Authorization":f"Bearer {self.amadeus_token}"
+            }
+      
+        date_range=self.get_date_range()
+        print(date_range)
+        
+        for date in date_range:
+            flight_params={
+                "originLocationCode": "LON",           # Origin IATA code (required)
+                "destinationLocationCode": f"{country['iatacode']}",      # Destination IATA code (required)
+                "departureDate": f"{date}",        # Departure date YYYY-MM-DD (required)      
+                "adults": 1,   
+                "currencyCode": "GBP",                # Currency for prices
+                "maxPrice": country['lowestprice'],
+                "nonStop":"false"
+            }
+            print(flight_params)
+            #  params = {
+            #     "originLocationCode": "LON",
+            #     "destinationLocationCode": "PAR",
+            #     "departureDate": "2025-01-20",
+            #     "adults": 1,
+            #     # Optional:
+            #     "returnDate": "2025-01-27",           # For round trips
+            #     "children": 0,                        # Number of children (2-12)
+            #     "infants": 0,                         # Number of infants (<2)
+            #     "travelClass": "ECONOMY",             # ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
+            #     "includedAirlineCodes": "BA,AF",      # Specific airlines
+            #     "excludedAirlineCodes": "U2",         # Exclude airlines
+            #     "nonStop": "true",                    # Only direct flights
+            #     "currencyCode": "USD",                # Currency for prices
+            #     "maxPrice": 500,                      # Maximum price
+            #     "max": 10,                            # Max results (default 250)
+            # }
+
+
+            print(flight_url)
+            print(self.amadeus_token) 
+
+            flightdata_response=requests.get(url=flight_url,headers=amadeus_headers,params=flight_params)
+            time.sleep(5)
+            allflight_data=flightdata_response.json()
+            if len(allflight_data)!=0:
+                self.get_cheapest_flight(allflight_data,country)
+                        
+                  
+
+            # print(f'{item['city']}\n{item['currency']}\n{item['grand_total']}\n{item['departure_at']}')
+
+            # call twilio fucntion calss and send our cheapest flight
+    def get_cheapest_flight(self,allflight_data,country):
+        json_string = json.dumps(allflight_data)
+        with open("flight.json", 'w', encoding='utf-8') as f:
+            json.dump(json_string,f)       
+
+        
+        with open('flight.json','r',encoding='utf-8') as f:
+            data=json.load(f)
+            flight_data=json.loads(data)
+
+   
+        # prices=allflight_data['data']
+        allpricelist=[]
+        prices=flight_data['data']
+  
+
+        for price in prices:
+            prices_dict={}
+            prices_dict['city']=country['city']
+            prices_dict['last_ticketing_date']=price['lastTicketingDate']
+            prices_dict['currency']=price['price']['currency']
+            prices_dict['grand_total']=price['price']['grandTotal']
+            prices_dict['departure_at']=price['itineraries'][0]['segments'][0]['departure']['at']
+            prices_dict['departure_location']=price['itineraries'][0]['segments'][0]['departure']['iataCode']
+            prices_dict['arrival_at']=price['itineraries'][0]['segments'][0]['arrival']['at']
+            # prices_dict['arrival_location']=price['itineraries'][0]['segments'][0]['arrival']['iataCode']
+            prices_dict['airline_code'] = price['itineraries'][0]['segments'][0]['carrierCode']
+            prices_dict['flight_number'] = price['itineraries'][0]['segments'][0]['number']
+            prices_dict['aircraft_type'] = price['itineraries'][0]['segments'][0]['aircraft']['code']
+            segments = price['itineraries'][0]['segments']
+            prices_dict['arrival_location'] =segments[-1]['arrival']['iataCode']
+            prices_dict['arrival_at']=segments[-1]['arrival']['at']
+            allpricelist.append(prices_dict)
+        print(allpricelist)    
+        print(json.dumps(allpricelist,indent=2))
+
+        
+        for item in allpricelist:
+            if float(item['grand_total'])<=float(country['lowestprice']):
+                print('we found your flight')
+                if not item['city'] in self.ourcheapestflights: 
+                    self.ourcheapestflights[item['city']]=item
+                else:
+                    if item['grand_total']< self.ourcheapestflights[item['city']]['grand_total']:
+                        self.ourcheapestflights[item['city']]=item    
