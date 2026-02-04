@@ -49,9 +49,9 @@ class NotificationManager:
 
         print(self.message_body)
   
-        receiver_email=userdata['whatIsYourEmailAddress']
-        with smtplib.SMTP('smtp.gmail.com') as connection:
+        receiver_email=userdata['whatIsYourEmailAddress?']
+        with smtplib.SMTP('smtp.gmail.com',587) as connection:
             connection.starttls()
             connection.login(user=self.sender_email,password=self.sender_password)
-            connection.sendmail(self.sender_email,receiver_email,self.message_body)
+            connection.sendmail(self.sender_email,receiver_email,self.message_body.encode('utf-8'))
             print('mail sent succesfully')

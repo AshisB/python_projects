@@ -1,1 +1,1 @@
-"{\"errors\": [{\"status\": 500, \"code\": 141, \"title\": \"SYSTEM ERROR HAS OCCURRED\"}]}"
+"{\"meta\": {\"count\": 0, \"links\": {\"self\": \"https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=LON&destinationLocationCode=DPS&departureDate=2026-03-20&adults=1&currencyCode=GBP&maxPrice=200&nonStop=true\"}}, \"data\": []}"

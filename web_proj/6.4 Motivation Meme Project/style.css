@@ -1,0 +1,31 @@
+body{
+    background-color:black;
+}
+
+.image{
+    border:5px solid white;
+    width:100%;
+
+}
+
+.main{
+    margin-top:50px;
+    width:50%;
+    margin-left:25%;
+} 
+
+.heading{
+    color:white;
+    font-family: "Libre Baskerville", serif;
+    font-optical-sizing: auto;
+    font-weight: 50px;
+    font-style: normal;
+    text-align:center;
+    text-transform: uppercase;
+}
+
+
+.paragraph-text{
+    color:white;
+    text-align:center;
+}
