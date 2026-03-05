@@ -1,0 +1,12 @@
+2026/02/19-23:33:07.845 2e80 Reusing MANIFEST C:\Users\DELL\PycharmProjects\PythonProject1\PythonProject\python_projects\web_proj\gym_booking_bot\chrome_profile\Default\IndexedDB\https_appbrewery.github.io_0.indexeddb.leveldb/MANIFEST-000001
+2026/02/19-23:33:07.846 2e80 Recovering log #6
+2026/02/19-23:33:07.925 2e80 Reusing old log C:\Users\DELL\PycharmProjects\PythonProject1\PythonProject\python_projects\web_proj\gym_booking_bot\chrome_profile\Default\IndexedDB\https_appbrewery.github.io_0.indexeddb.leveldb/000006.log 
+2026/02/19-23:40:29.545 2e80 Level-0 table #11: started
+2026/02/19-23:40:29.579 2e80 Level-0 table #11: 787363 bytes OK
+2026/02/19-23:40:29.582 2e80 Delete type=0 #6
+2026/02/19-23:40:42.240 2e80 Compacting 1@1 + 1@2 files
+2026/02/19-23:40:42.290 2e80 Generated table #12@1: 1468 keys, 40361 bytes
+2026/02/19-23:40:42.290 2e80 Compacted 1@1 + 1@2 files => 40361 bytes
+2026/02/19-23:40:42.291 2e80 compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/02/19-23:40:42.292 2e80 Delete type=2 #8
+2026/02/19-23:40:42.292 2e80 Delete type=2 #11

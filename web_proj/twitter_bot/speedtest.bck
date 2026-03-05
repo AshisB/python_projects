@@ -1,0 +1,98 @@
+UPLOAD_SPEED=20
+DOWNLOAD_SPEED=50
+
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException,TimeoutException
+from twitter import Twitter
+import os
+import time
+
+
+class Speedtest:
+    def __init__(self):
+        self.retries=7
+        self.bandwidth={}
+        self.get_browser()
+ 
+
+    def get_browser(self):
+        user_data_dir=os.path.join(os.getcwd(),"chrome_profile")
+        self.chrome_options=webdriver.ChromeOptions()
+        self.chrome_options.add_experimental_option("detach",True)
+        self.chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
+        self.chrome_options.add_argument("--no-sandbox")  # 👈 CRITICAL
+        self.chrome_options.add_argument("--disable-dev-shm-usage")  # 👈 CRITICAL
+        self.chrome_options.add_argument("--remote-debugging-port=9222")  # 👈 CRITICAL for Chrome 136+
+
+        self.browser=webdriver.Chrome(options=self.chrome_options)
+        self.browser.get("https://www.speedtest.net/")
+        self.maximize_speedtest_window()
+    
+    def maximize_speedtest_window(self):
+        self.browser.get("https://www.speedtest.net/")
+        self.browser.maximize_window()
+        self.wait=WebDriverWait(self.browser,10)
+
+
+    def retry_logic(self,func):
+        print('entry')
+        for attempt in range(1,self.retries+1):
+            print(f'This is attempt {attempt}')
+            try:
+                result=func()
+                return result
+            except TimeoutException:
+                print('Time is out,waiting.....')
+            except NoSuchElementException:
+                print('Element doesnot exist>>>')
+            except Exception as e:
+                print('Sorry!!!There is some problem.')       
+                if attempt<= self.retries:
+                    print(f'Error=>{e}')
+        time.sleep(2 ** attempt)          
+
+    def click_go(self):
+        go_button=self.wait.until(EC.element_to_be_clickable((By.XPATH,'//*[@id="container"]/div[1]/div[3]/div/div/div/div[2]/div[2]/div/div[2]/a')))
+        print(go_button)
+        go_button.click()
+        return True
+
+    def check_bandwidth(self):
+        download_speed=self.wait.until(EC.presence_of_element_located((By.XPATH,'//*[@id="container"]/div[1]/div[3]/div/div/div/div[2]/div[2]/div/div[4]/div/div[3]/div/div/div[2]/div[1]/div[1]/div/div[2]/span')))
+        upload_speed=self.wait.until(EC.presence_of_element_located((By.XPATH,'//*[@id="container"]/div[1]/div[3]/div/div/div/div[2]/div[2]/div/div[4]/div/div[3]/div/div/div[2]/div[1]/div[2]/div/div[2]/span')))
+        self.bandwidth={'download':download_speed.text,'upload':upload_speed.text}
+        print(self.bandwidth)
+        return self.bandwidth
+            
+    
+
+if __name__=="__main__":
+    print('Twitter for tweeting and tagging ISP for slow network.')
+    speedtestobj=Speedtest()
+    go_clicked=speedtestobj.retry_logic(speedtestobj.click_go)
+    if(go_clicked):
+        speed_isp=speedtestobj.retry_logic(speedtestobj.check_bandwidth)
+        print(speed_isp)
+        for i in range(1,speedtestobj.retries+1):
+            if speed_isp['download']=='' or speed_isp['download']=='—' or speed_isp['upload']=='—':
+                print('Waitng for values:')
+                print(f"value check {i}")
+                speed_isp=speedtestobj.retry_logic(speedtestobj.check_bandwidth)
+                time.sleep(2**i)
+            else:
+                print(speed_isp)
+                break    
+        
+        if speed_isp['download']<DOWNLOAD_SPEED:
+            twitterobj=Twitter()
+
+
+
+
+
+
