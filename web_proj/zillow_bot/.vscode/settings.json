@@ -1,0 +1,20 @@
+{
+    // ===== PYTHON LANGUAGE SERVER =====
+    "python.languageServer": "Pylance",
+    
+    // ===== PYTHON INTERPRETER - YOUR EXACT PATH =====
+    "python.defaultInterpreterPath": "C:\\Users\\DELL\\PycharmProjects\\PythonProject1\\PythonProject\\python_projects\\web_proj\\zillow_bot\\env\\Scripts\\python.exe",
+    
+    // ===== PYLANCE SETTINGS =====
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
+    
+    // ===== EXTRA PATHS =====
+    "python.analysis.extraPaths": [
+        "C:\\Users\\DELL\\PycharmProjects\\PythonProject1\\PythonProject\\python_projects\\web_proj\\zillow_bot"
+    ],
+    
+    // ===== TERMINAL SETTINGS =====
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true
+}
