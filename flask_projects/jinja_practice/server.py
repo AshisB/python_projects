@@ -38,5 +38,10 @@ def person(username,country="US"):
 
     return render_template("person.html",person_name=username.title(),age=agify_data['age'],gender=genderize_data['gender'])
 
+@app.route("/blog")
+def get_blog():
+    blog_response=requests.get("https://api.npoint.io/996355f60e00ea7df313")
+    blog_response_data=blog_response.json()
+    return render_template('blog.html',blog_data=blog_response_data)
 if __name__=="__main__":
     app.run(debug=True)
