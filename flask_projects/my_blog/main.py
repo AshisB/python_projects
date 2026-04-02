@@ -1,7 +1,12 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request
 import requests
 from blog import Blog
 import datetime
+import smtplib
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 app = Flask(__name__)
@@ -48,12 +53,47 @@ def about():
     subtitle='This is what I do.'
     return render_template('about.html',pagedata=title,image_header=image_path,subtitle=subtitle)
 
-@app.route('/contact')
+@app.route('/contact',methods=['GET','POST'])
 def contact():
-    image_path = f'assets/img/contact-bg.jpg'
-    title='Contact Me'
-    subtitle='Have questions?I have answers.'
-    return render_template('contact.html',pagedata=title,image_header=image_path,subtitle=subtitle)
+    if request.method=='GET':
+        image_path = f'assets/img/contact-bg.jpg'
+        title='Contact Me'
+        subtitle='Have questions?I have answers.'
+        return render_template('contact.html',pagedata=title,image_header=image_path,subtitle=subtitle)
+    elif request.method=='POST':
+        image_path = f'assets/img/contact-bg.jpg'
+        title = 'Thank you for giving us feedback'
+        subtitle = 'Have questions?I have answers.'
+        print(request.method)
+        print(request.form)
+        name=request.form.get('name')
+        email=request.form.get('email')
+        phone=request.form.get('phone')
+        message=request.form.get('message')
+        final_message=f"""
+        from={name}
+        email={email}
+        phone={phone}
+        message={message}
+        """
+        result=SendMail(final_message,'maharjanashis9@gmail.com')
+        if result:
+            return render_template('contact.html', pagedata=title, image_header=image_path, subtitle=subtitle,message="Thank you for giving us feedback")
+        else:
+            return render_template('contact.html', pagedata=title, image_header=image_path, subtitle=subtitle,
+                                   message="Sorry,There was problem while sending message")
+
+def SendMail(message_template,receiver_email):
+    sender_email = os.getenv('SENDER_EMAIL')
+    sender_password = os.getenv('SENDER_PASSWORD')
+    message=f'Subject:Blog Feedback:\n\n{message_template}'
+    with smtplib.SMTP('smtp.gmail.com') as connection:
+        connection.starttls()
+        connection.login(user=sender_email,password=sender_password)
+        connection.sendmail(sender_email,receiver_email,message)
+        print('mail sent succesfully')
+        return True
+
 
 if __name__ == "__main__":
     app.run(debug=True)
