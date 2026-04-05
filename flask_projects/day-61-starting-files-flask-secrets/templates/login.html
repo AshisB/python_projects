@@ -1,13 +1,14 @@
-<!DOCTYPE HTML>
+{%extends "base.html"%}
+{%block title%}Login{%endblock%}
 
-<html>
-	<head>
-		<title>Login</title>
-	</head>
-	<body>
-        <div class="container">
-		<h1>Login</h1>
-        <!-- This is where our form will go. -->
-        </div>
-	</body>
-</html>
+{%block content%}
+	<div class="container">
+	<h1>Login</h1>
+	<form action="{{url_for('login')}}" method="post">
+		{{form.csrf_token}}
+		{{form.username.label}}{{form.username(class='form-control')}}
+		{{form.password.label}}{{form.password(class='form-control')}}
+		{{form.submit(class='btn btn-primary mt-3')}}
+	</form>
+	</div>
+{%endblock%}
