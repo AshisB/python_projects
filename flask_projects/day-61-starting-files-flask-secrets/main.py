@@ -1,17 +1,17 @@
 from flask import Flask, render_template,redirect,url_for,session
-from flask_bootstrap import Bootstrap5
+from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField,PasswordField,SubmitField
-from wtforms.validators import InputRequired,Length
+from wtforms.validators import InputRequired,Length,email
 
 app = Flask(__name__)
 app.config['SECRET_KEY']='secret key'
-bootstrap = Bootstrap5(app)
+bootstrap = Bootstrap(app)
 
 
 class LoginForm(FlaskForm):
-    username=StringField('username',validators=[InputRequired('username required'),Length(min=5,max=10,message='username should be of length 5 to 10')])
-    password=PasswordField('password',validators=[InputRequired('Password required'),Length(min=5,max=10,message='username should be of length 5 to 10')])
+    username=StringField('username',validators=[InputRequired('username required'),email(message='Email must  Have @ and format example@xyz.com !!')])
+    password=PasswordField('password',validators=[InputRequired('Password required'),Length(min=8,max=15,message='Username should be of length 8 to 15 !!')])
     submit=SubmitField('submit')
 
 @app.route("/")
