@@ -1,0 +1,40 @@
+{%extends 'base.html'%}
+{%block title%}<title>Book Store</title>{%endblock%}
+{%block styles%}
+<style>
+    .round-button{
+        border-radius:50%;
+        }
+</style>
+
+{%endblock%}
+{%block content%}
+<div class="col-12">
+    <h1 class="text-center">Book Store</h1>
+    <a href="{{url_for('add_book')}}" class="btn btn-primary mt-1 mb-2">+ Add a new book</a>
+    <table class="table">
+  <thead class="table-dark">
+    <tr>
+        {%for column in all_column%}
+        <th><strong>{{column}}</strong></th>
+        {%endfor%}
+        <th><strong>Action</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for book in books%}
+    <tr>
+      <th>{{loop.index}}</th>
+      <th><strong>{{book.title}}</strong></th>
+      <th>{{book.author}}</th>
+      <th>{{book.rating}}</th>
+      <th><a  href="{{url_for('edit_book',id=book.id)}}" class="btn btn-warning me-2 round-button"><i class="bi bi-pencil-square"></i></a>
+          <a  href="{{url_for('delete_book',id=book.id)}}" class="btn btn-danger round-button"><i class="bi bi-trash"></i></a></th>
+    </tr>
+    {%endfor%}
+
+  </tbody>
+</table>
+
+</div>
+{%endblock%}
