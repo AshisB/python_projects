@@ -24,8 +24,9 @@
 	 justify-content: center;
 	 align-items: center;
 	 flex-wrap: wrap;
-	 max-width: 1500px;
+	 max-width: 2500px;
 }
+
  p.overview {
 	 font-size: 12px;
 	 height: 200px;

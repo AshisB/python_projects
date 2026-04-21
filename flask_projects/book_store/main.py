@@ -43,7 +43,7 @@ def handle_book_errors(f):
 def home():
     books=Books.get_all_books()
     columns=Books.get_column_names()
-    print(columns)
+
     if len(books)>0:
         return render_template("index.html",books=books,all_column=columns)
     else:
@@ -73,6 +73,7 @@ def add_book():
 
 
 @app.route("/edit-book/<int:id>",methods=['GET','POST'])
+@handle_book_errors
 def edit_book(id):
     bookinfo=Books.get_book_info(id)
     if bookinfo:
@@ -99,6 +100,7 @@ def edit_book(id):
 
 
 @app.route("/delete-book/<int:id>")
+@handle_book_errors
 def delete_book(id):
     Books.delete_book(id)
     flash('Book deleted successfully!', 'success')

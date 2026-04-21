@@ -6,6 +6,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
+      <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/movie-icon.ico') }}">
+
 
     {% block styles %}
     <!-- Load Bootstrap-Flask CSS here -->
@@ -29,11 +31,17 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
+    {{ toastr.include_jquery() }}
+    {{ toastr.include_toastr_css() }}
+    {{ toastr.message() }}
     {% endblock %}
 
     <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
     {% block content %}{% endblock %}
+  {{ bootstrap.load_js() }}
+  {{ toastr.include_toastr_js() }}
+  {%block scripts%}{%endblock%}
   </body>
 </html>

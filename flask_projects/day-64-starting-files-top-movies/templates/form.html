@@ -1,0 +1,83 @@
+{% extends 'base.html' %} {% from 'bootstrap5/form.html' import render_form %}
+{% block title %}{{pagename.title()}} Movies{% endblock %} {% block content %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+  <h1 class="heading">{{pagename.title()}} Movie</h1>
+  <p class="description"> {{pagename.title()}} Movies to our database carefully!!.</p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-6 ">
+            <!-- Select2 Search Box (Not part of WTForms) -->
+            <div class="mb-4">
+                <label class="form-label">Search Movie (Auto-fill)</label>
+                <select id="movie-select" style="width: 100%;">
+                    <option></option>
+                </select>
+                <small class="text-muted">Type at least 3 characters to search</small>
+            </div>
+             {{ render_form(form, novalidate=True) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{%block scripts%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#movie-select').select2({
+        placeholder: 'Search for a movie...',
+        minimumInputLength: 3,
+        ajax: {
+            url: "{{ url_for('search_movie_select2') }}",
+            dataType: 'json',
+            delay: 300,
+            data: function(params) {
+                return { q: params.term };
+            },
+            processResults: function(data) {
+                return { results: data.results };
+            }
+        }
+    });
+
+ $('#movie-select').on('select2:select', function (e) {
+
+    const movieId = e.params.data.id;
+
+    if (!movieId) {
+        toastr.error('Invalid movie selected');
+        return;
+    }
+
+    toastr.info('Loading movie details...');
+
+    fetch(`/movie-details/${movieId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed request');
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            $('#movie-title').val(data.title || '');
+            $('#movie-year').val(data.year || '');
+            $('#movie-description').val(data.description || '');
+            $('#movie-rating').val(data.rating || '');
+            $('#movie-img_url').val(data.img_url || '');
+
+            toastr.success('Movie details loaded!');
+        })
+        .catch(error => {
+            console.error(error);
+            toastr.error('Failed to load movie details');
+        });
+ })
+});
+</script>
+{%endblock%}
