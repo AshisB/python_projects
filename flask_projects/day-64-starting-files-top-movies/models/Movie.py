@@ -38,9 +38,13 @@ class Movie(db.Model):
 
     @classmethod
     def getMovies(cls):
-        query=select(cls).order_by(cls.ranking)
+        query=select(cls).order_by(cls.rating.asc())
         movies=db.session.execute(query)
-        return movies.scalars().all()
+        movies_list=movies.scalars().all()
+
+        for i in range(len(movies_list)):
+            movies_list[i].ranking=len(movies_list)-i
+        return movies_list
 
     @classmethod
     def getMovie(cls,id):
