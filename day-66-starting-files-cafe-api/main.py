@@ -4,6 +4,8 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Boolean,select,update,delete,func
 import json
 
+from sqlalchemy.testing.config import ident
+
 '''
 Install the required packages first: 
 Open the Terminal in PyCharm (bottom left). 
@@ -60,6 +62,14 @@ def random():
     print(json.dumps(cafe_dict, indent=2))
     return jsonify(cafe_dict)
 
+
+@app.route("/all")
+def get_all():
+    query=select(Cafe).order_by(Cafe.coffee_price)
+    cafes=db.session.execute(query).scalars().all()
+    cafe_list=[{column.name:getattr(cafe,column.name) for column in cafe.__table__.columns} for cafe in cafes]
+    print(json.dumps(cafe_list,indent=2))
+    return jsonify(cafe_list)
 
 
 # HTTP GET - Read Record
