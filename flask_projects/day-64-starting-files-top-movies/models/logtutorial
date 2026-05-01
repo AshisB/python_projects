@@ -1,0 +1,19 @@
+# You can actually see this in action!
+from your_model_file import Movie
+from app import db
+import logging
+
+# Turn on SQL logging to see what happens
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
+with app.app_context():
+    db.create_all()
+
+# Output in terminal:
+# CREATE TABLE movies (
+#     id INTEGER NOT NULL,
+#     title VARCHAR(250),
+#     year INTEGER,
+#     PRIMARY KEY (id)
+# )
