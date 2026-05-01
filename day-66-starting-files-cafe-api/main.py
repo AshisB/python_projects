@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request,url_for,redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Boolean,select,update,delete,func
+from sqlalchemy import Integer, String, Boolean,select,update,delete,func,desc
 import json
 
 from sqlalchemy.testing.config import ident
@@ -71,11 +71,72 @@ def get_all():
     print(json.dumps(cafe_list,indent=2))
     return jsonify(cafe_list)
 
+@app.route("/search")
+def get_cafe():
+    location=request.args.get('loc')
+    query=select(Cafe).order_by(desc(Cafe.name)).where(Cafe.location==location)
+    cafes=db.session.execute(query).scalars().all()
 
+    cafe_list=[{column.name:getattr(cafe,column.name) for column in cafe.__table__.columns} for cafe in cafes]
+    return jsonify(cafe_list)
+
+@app.route("/add-cafe", methods=['GET', 'POST'])
+def addCafe():
+    # Use request.args for URL query parameters
+    newcafe = Cafe(
+        coffee_price=request.args.get('coffee_price'),  # Fixed spelling
+        name=request.args.get('name'),
+        map_url=request.args.get('map_url'),
+        img_url=request.args.get('img_url'),
+        location=request.args.get('location'),
+        has_sockets=bool(int(request.args.get('has_sockets', 0))),  # Convert to boolean
+        has_toilet=bool(int(request.args.get('has_toilet', 0))),
+        has_wifi=bool(int(request.args.get('has_wifi', 0))),
+        can_take_calls=bool(int(request.args.get('can_take_calls', 0))),
+        seats=int(request.args.get('seats', 0))  # Convert to integer
+    )
+    db.session.add(newcafe)
+    db.session.commit()
+    return jsonify({'success': 'Cafe has been succesfully added.'})
+
+@app.route("/update-price/<int:id>",methods=["PATCH"])
+def updatePrice(id):
+    try:
+        price =request.args.get('coffee_price')
+        
+        if not price:
+            return jsonify({"error": "Price is required"}), 400
+        
+        query=update(Cafe).where(Cafe.id==id).values(coffee_price=price)
+        db.session.execute(query)
+        db.session.commit()
+        return jsonify({"Success":"Successfully price updated."}),200
+    except Exception as e:
+        return jsonify({"Not found":f"Sorry!There was problem.{str(e)}"}),500   
+    
+@app.route("/report-closed/<int:id>",methods=["DELETE"])   
+def deleteCafe(id):
+    apiKey=request.args.get("api-key")
+    if apiKey:
+        if apiKey=="TopSecretAPIKey":
+            cafe=db.session.get(Cafe,id)
+            if cafe:
+                db.session.delete(cafe)
+                db.session.commit()
+                return jsonify({"success":"Successfully deleted"}),200
+            else:
+                return jsonify({"Not Found":"Sorry!cafe not found"}),400
+
+            
+        else:
+            return jsonify({"error":"Sorry!Please use correct API KEY"}),403
+    else:        
+        return jsonify({"error":"API KEY NEEDED!Please use API KEY"}),401
+# Mahadev Har Har Mahadev
 # HTTP GET - Read Record
-
+# Shambhoo
 # HTTP POST - Create Record
-
+#  Tu hi he shambhu tu hi he 
 # HTTP PUT/PATCH - Update Record
 
 # HTTP DELETE - Delete Record
