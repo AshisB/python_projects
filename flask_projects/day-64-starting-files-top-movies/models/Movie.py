@@ -55,8 +55,6 @@ class Movie(db.Model):
     @classmethod
     def editMovie(cls,id,form_data:MovieData):
         movie=cls.getMovie(id)
-        print("hrer")
-        print(movie)
         print(form_data)
         print(form_data.title)
         if movie:
