@@ -8,8 +8,13 @@ from datetime import date
 from dotenv import load_dotenv
 import os
 from models.Base import db
+from models.User import User
+from app_class.user_class import UserForm,UserData
+from models.Comment import Comment
+# from app_class.user_class import CommentForm,CommentData
 from models.Post import BlogPost
 from app_class.post_class import FillForm,PostData
+
 from flask_toastr import Toastr
 
 
@@ -122,6 +127,14 @@ def about():
 def contact():
     return render_template("contact.html")
 
+
+#**************************************USERS*************************************
+@app.route("/register",methods=['GET','POST'])
+def register():
+    form=UserForm()
+    if form.validate_on_submit():
+        pass
+    return render_template('register.html',form=form,pagename="register")
 
 if __name__ == "__main__":
     app.run(debug=True, port=5003)

@@ -1,6 +1,6 @@
 from models.Base import db
-from sqlalchemy.orm import Mapped,mapped_column
-from sqlalchemy import String, Float, update, Integer, Text, select, delete, asc
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Float, update, Integer, Text, select, delete, asc, ForeignKey
 from datetime import datetime,timezone
 from app_class.post_class import PostData
 
@@ -23,6 +23,20 @@ class BlogPost(db.Model):
     created_at: Mapped[datetime] = mapped_column(default=datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(default=datetime.now(timezone.utc),
                                                  onupdate=datetime.now(timezone.utc))
+
+    #foreign keys
+    added_by_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+    added_by = relationship('User', foreign_keys=[added_by_id], back_populates='posts_added')
+
+    updated_by_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+    updated_by = relationship('User', foreign_keys=[updated_by_id], back_populates='posts_updated')
+
+    comments = relationship('Comment', back_populates='post', lazy=True,
+                            cascade='all, delete-orphan')
+
+
+
+
 
 
     @classmethod
