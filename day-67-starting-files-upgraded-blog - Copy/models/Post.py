@@ -1,14 +1,9 @@
-import enum
-
 from models.Base import db
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Float, update, Integer, Text, select, delete, asc, ForeignKey
 from datetime import datetime,timezone
 from app_class.post_class import PostData
 
-class BlogStatus(enum.Enum):
-    ACTIVE = 'active'
-    INACTIVE = 'inactive'
 
 
 
@@ -22,9 +17,9 @@ class BlogPost(db.Model):
     subtitle: Mapped[str] = mapped_column(String(250), nullable=False)
     date: Mapped[str] = mapped_column(String(250), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    author: Mapped[str] = mapped_column(String(250), nullable=True)
-    status: Mapped[BlogStatus] = mapped_column(String(20), nullable=True, default='active')
+    author: Mapped[str] = mapped_column(String(250), nullable=False)
     img_url: Mapped[str] = mapped_column(String(250), nullable=False)
+
     created_at: Mapped[datetime] = mapped_column(default=datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(default=datetime.now(timezone.utc),
                                                  onupdate=datetime.now(timezone.utc))
@@ -51,20 +46,6 @@ class BlogPost(db.Model):
         return posts.all()
 
     @classmethod
-    def getQuery(cls):
-        return db.session.query(cls).order_by(cls.date.desc())
-
-    @classmethod
-    def get_query_by_user(cls, user_id):
-        """Returns a query object filtered by user, can be chained with .paginate()"""
-        return db.session.query(cls).where(cls.added_by_id == user_id).order_by(cls.date.desc())
-
-    @classmethod
-    def getAllPostUser(cls, user_id):
-        """Returns all posts by a specific user as a list"""
-        return cls.get_query_by_user(user_id).all()
-
-    @classmethod
     def addPost(cls,form_obj:PostData):
         new_post=cls(
             title=form_obj.title,
@@ -72,8 +53,7 @@ class BlogPost(db.Model):
             date=form_obj.date,
             body=form_obj.body,
             author=form_obj.author,
-            img_url=form_obj.img_url,
-            added_by_id=form_obj.added_by_id
+            img_url=form_obj.img_url
         )
         db.session.add(new_post)
         db.session.commit()
@@ -88,7 +68,6 @@ class BlogPost(db.Model):
             post.body = form_obj.body
             post.author = form_obj.author
             post.img_url = form_obj.img_url
-            post.updated_by_id = form_obj.updated_by_id
         db.session.commit()
 
 
@@ -106,3 +85,7 @@ class BlogPost(db.Model):
         print(post_data)
         return post_data
 
+    # @classmethod
+    # def getPost(cls, post_id):
+    #     post_data = db.session.get(cls, post_id)
+    #     return post_data

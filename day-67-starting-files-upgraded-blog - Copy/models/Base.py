@@ -7,4 +7,3 @@ class Base(DeclarativeBase):
 
 #creates database
 db = SQLAlchemy(model_class=Base)
-

@@ -1,8 +1,8 @@
 from models.Base import db
 from sqlalchemy.orm import Mapped,mapped_column,relationship
-from sqlalchemy import String,Integer, Text, select, delete, asc, ForeignKey, desc
+from sqlalchemy import String, Float, update, Integer, Text, select, delete, asc, ForeignKey
 from datetime import datetime,timezone
-from app_class.comment_class import CommentData
+from app_class.post_class import PostData
 
 
 
@@ -25,20 +25,3 @@ class Comment(db.Model):
 
     post_id: Mapped[int] = mapped_column(Integer, ForeignKey('posts.id', ondelete='CASCADE'), nullable=False)
     post = relationship('BlogPost', back_populates='comments')
-
-    @classmethod
-    def addComment(cls, form_obj: CommentData):
-        new_comment = cls(
-            text=form_obj.text,
-            post_id=form_obj.post_id,
-            user_id=form_obj.user_id
-        )
-        db.session.add(new_comment)
-        db.session.commit()
-
-
-    @classmethod
-    def getAllComment(cls,post_id):
-        query=select(cls).where(cls.post_id==post_id).order_by(desc(cls.id))
-        comments=db.session.execute(query).scalars()
-        return comments.all()

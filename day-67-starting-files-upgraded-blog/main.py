@@ -1,19 +1,20 @@
-import datetime
-from functools import wraps
-from flask import Flask, render_template, redirect, url_for,flash
-from flask_bootstrap import Bootstrap5
-from flask_migrate import Migrate
-from flask_ckeditor import CKEditor
-from datetime import date
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+from flask import Flask, g
+from flask_bootstrap import Bootstrap5
+from sqlalchemy import event
+
 from models.Base import db
+from flask_migrate import Migrate
+from flask_login import LoginManager
+from flask_ckeditor import CKEditor
+from flask_wtf import CSRFProtect
+
+from controllers.UserController import UserController
 from models.User import User
-from app_class.user_class import UserForm,UserData
+from controllers.PostController import PostController
 from models.Comment import Comment
-# from app_class.user_class import CommentForm,CommentData
-from models.Post import BlogPost
-from app_class.post_class import FillForm,PostData
+from controllers.CommentController import CommentController
 
 from flask_toastr import Toastr
 
@@ -23,9 +24,11 @@ load_dotenv()
 migrate=Migrate()
 app = Flask(__name__)
 app.config['SECRET_KEY'] =os.getenv('SECRET_KEY')
+csrf = CSRFProtect(app)
 Bootstrap5(app)
 ckeditor=CKEditor(app)
 toastr=Toastr(app)
+
 
 
 # CREATE DATABASE
@@ -33,108 +36,43 @@ app.config['SQLALCHEMY_DATABASE_URI'] =os.getenv('DATABASE_URI')
 db.init_app(app)  #connection of database to flask application
 migrate.init_app(app,db)
 
-
-#****************************************exception handling*********************************************
-def handle_movie_errors(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except Exception as e:
-            error_msg = "Sorry! There is some problem while performing your task."
-            return redirect(url_for('home',error=error_msg))
-    return decorated
+@app.before_request
+def enable_foreign_keys():
+    if not getattr(g, 'fk_enabled', False):
+        db.session.execute(db.text("PRAGMA foreign_keys=ON"))
+        g.fk_enabled = True
+#login manager
+login_manager=LoginManager()
+login_manager.init_app(app)
 
 
-
-
-
-@app.route('/')
-def home():
-    posts = BlogPost.getAll()
-    return render_template("index.html", all_posts=posts)
-
-
-@app.route('/post/<int:post_id>')
-@handle_movie_errors
-def show_post(post_id):
-    requested_post = BlogPost.getPost(post_id)
-    return render_template("post.html", post=requested_post)
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
 
 
 
-@app.route('/add-post',methods=['GET','POST'])
-@handle_movie_errors
-def add_post():
-    form=FillForm()
-    if form.validate_on_submit():
-        now=datetime.datetime.now()
-        year=now.year
-        month=now.strftime("%B")
-        day=now.day
-        date=f"{day} {month},{year}"
-        form_data={
-            'title':form.title.data,
-            'subtitle':form.subtitle.data,
-            'date':date,
-            'body':form.body.data,
-            'author':form.author.data,
-            'img_url':form.img_url.data
-        }
-        form_obj=PostData(form_data)
-        BlogPost.addPost(form_obj)
-        flash('Post added successfully!!','success')
-        return redirect(url_for('home'))
-    return render_template("make-post.html",form=form,pagename="add")
+app.add_url_rule('/','home',PostController.home)
+app.add_url_rule('/post/<int:post_id>','show_post',PostController.show_post)
+app.add_url_rule('/add-post','add_post',PostController.add_post,methods=['GET','POST'])
+app.add_url_rule('/edit-post/<int:post_id>', 'edit_post',PostController.edit_post, methods=['GET', 'POST'])
+app.add_url_rule('/delete-post/<int:post_id>','delete_post',PostController.delete_post)
+app.add_url_rule('/about','about',PostController.about)
+app.add_url_rule('/contact','contact',PostController.contact)
+app.add_url_rule('/error','error',PostController.error)
 
 
-@app.route("/edit-post/<int:post_id>",methods=['GET','POST'])
-@handle_movie_errors
-def edit_post(post_id):
-    post_data=BlogPost.getPost(post_id)
-    form = FillForm(obj=post_data)
-    if form.validate_on_submit():
-        form_data = {
-            'title': form.title.data,
-            'subtitle': form.subtitle.data,
-            'date': date,
-            'body': form.body.data,
-            'author': form.author.data,
-            'img_url': form.img_url.data
-        }
-        form_obj=PostData(form_data)
-        BlogPost.editPost(form_obj,post_id)
-        flash('Blog edited succesfully.','success')
-        return redirect(url_for('home'))
-    return render_template('make-post.html',form=form,pagename="edit")
-
-
-
-@app.route("/delete-post/<int:post_id>")
-@handle_movie_errors
-def delete_post(post_id):
-    BlogPost.deletePost(post_id)
-    flash('Post successfully deleted','success')
-    return redirect(url_for('home'))
-
-# Below is the code from previous lessons. No changes needed.
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
-
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
 
 
 #**************************************USERS*************************************
-@app.route("/register",methods=['GET','POST'])
-def register():
-    form=UserForm()
-    if form.validate_on_submit():
-        pass
-    return render_template('register.html',form=form,pagename="register")
+app.add_url_rule('/register','register',UserController.register,methods=['GET','POST'])
+app.add_url_rule('/login','login',UserController.login,methods=['GET','POST'])
+app.add_url_rule('/logout','logout',UserController.logout)
+
+#************************************Comments*********************************************
+app.add_url_rule('/post/<int:post_id>/comment/','add_comment',CommentController.add_comment,methods=['GET','POST'])
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5003)
